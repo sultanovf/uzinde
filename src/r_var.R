@@ -71,6 +71,4 @@ my_theme <- theme(
   legend.direction = "horizontal",
 )
 
-# deploy
-#library(rsconnect)
-rsconnect::writeManifest()
+

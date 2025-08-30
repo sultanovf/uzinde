@@ -73,4 +73,6 @@ df_time <-
   summarise(Total = sum(Cnt))
 
 
-
+# deploy
+#library(rsconnect)
+#rsconnect::writeManifest()
