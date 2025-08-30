@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "locale": "de_DE",
+  "platform": "4.5.1",
+  "metadata": {
+    "appmode": "quarto-shiny",
+    "primary_rmd": "uzbinde.qmd",
+    "primary_html": null,
+    "content_category": null,
+    "has_parameters": false
+  },
+  "environment": {
+    "r": {
+      "requires": "~=4.5.0"
+    }
+  },
+  "quarto": {
+    "version": "1.7.32",
+    "engines": ["knitr"]
+  },
+  "packages": {
+    "renv": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "renv",
+        "Type": "Package",
+        "Title": "Project Environments",
+        "Version": "1.1.5",
+        "Authors@R": "c(\n    person(\"Kevin\", \"Ushey\", role = c(\"aut\", \"cre\"), email = \"kevin@rstudio.com\",\n           comment = c(ORCID = \"0000-0003-2880-7407\")),\n    person(\"Hadley\", \"Wickham\", role = c(\"aut\"), email = \"hadley@rstudio.com\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n    )",
+        "Description": "A dependency management toolkit for R. Using 'renv', you can create\n    and manage project-local R libraries, save the state of these libraries to\n    a 'lockfile', and later restore your library as required. Together, these\n    tools can help make your projects more isolated, portable, and reproducible.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://rstudio.github.io/renv/, https://github.com/rstudio/renv",
+        "BugReports": "https://github.com/rstudio/renv/issues",
+        "Imports": "utils",
+        "Suggests": "BiocManager, cli, compiler, covr, cpp11, devtools, generics,\ngitcreds, jsonlite, jsonvalidate, knitr, miniUI, modules,\npackrat, pak, R6, remotes, reticulate, rmarkdown, rstudioapi,\nshiny, testthat, uuid, waldo, yaml, webfakes",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "VignetteBuilder": "knitr",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Config/testthat/parallel": "true",
+        "Config/testthat/start-first": "bioconductor,python,install,restore,snapshot,retrieve,remotes",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-07-24 20:47:34 UTC; kevin",
+        "Author": "Kevin Ushey [aut, cre] (ORCID: <https://orcid.org/0000-0003-2880-7407>),\n  Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Posit Software, PBC [cph, fnd]",
+        "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-07-24 21:40:02 UTC",
+        "Built": "R 4.5.1; ; 2025-08-04 00:23:05 UTC; windows"
+      }
+    }
+  },
+  "files": {
+    "_brand.yml": {
+      "checksum": "e6859f8a846176eab9dd7ca1250204c9"
+    },
+    "data/usbinde.csv": {
+      "checksum": "ddc4591e25066160d4fb48cf991cc18a"
+    },
+    "footer.html": {
+      "checksum": "6c06ea6deba7786b95d343ac78a6cd1f"
+    },
+    "pics/dop.png": {
+      "checksum": "22c09d8f875f3c2534448b1172bb61af"
+    },
+    "pics/uzde.jpg": {
+      "checksum": "3662b86bb87b0d518d943e0634b5e49c"
+    },
+    "pics/uzde1.jpg": {
+      "checksum": "b7fe67b2ad267d3ed958fc5205715c93"
+    },
+    "README.md": {
+      "checksum": "b689b176edefbde43fd398f6f18d5c9f"
+    },
+    "renv.lock": {
+      "checksum": "b2622f6a4a9cc026a61724d0abb54342"
+    },
+    "src/r_global - Kopie.R": {
+      "checksum": "ceef9189691ac8a3400cb228f32e8fc4"
+    },
+    "src/r_global.R": {
+      "checksum": "92d3c702e86eb336d566bc739fa4681c"
+    },
+    "src/r_var.R": {
+      "checksum": "34ba512a0307fbaf49a41ef551e1fdf3"
+    },
+    "theme/custom.scss": {
+      "checksum": "8e1e0e46da13b69f9b85a9fa6da9d69a"
+    },
+    "uzbinde.html": {
+      "checksum": "bf90e71c6c9d5c705bec11fe7e9a01d2"
+    },
+    "uzbinde.qmd": {
+      "checksum": "16f0c64e9b17072f6051ad90fe57c6d1"
+    },
+    "uzbinde_files/libs/bootstrap/bootstrap-5d382e041ea3337a81b582b5362838a2.min.css": {
+      "checksum": "5d382e041ea3337a81b582b5362838a2"
+    },
+    "uzbinde_files/libs/bootstrap/bootstrap-dark-ce4162b7752fdca652e0cb5702729398.min.css": {
+      "checksum": "ce4162b7752fdca652e0cb5702729398"
+    },
+    "uzbinde_files/libs/bootstrap/bootstrap-icons.css": {
+      "checksum": "2318f137d201fbf51601fa0faba6bef7"
+    },
+    "uzbinde_files/libs/bootstrap/bootstrap-icons.woff": {
+      "checksum": "1a51dfbe5467607389d603c02a77cd10"
+    },
+    "uzbinde_files/libs/bootstrap/bootstrap.min.js": {
+      "checksum": "e2b09c06f0e714b6144a6788a28e3950"
+    },
+    "uzbinde_files/libs/clipboard/clipboard.min.js": {
+      "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
+    },
+    "uzbinde_files/libs/quarto-dashboard/components.js": {
+      "checksum": "ac49ebff39666f27f4631a3914841683"
+    },
+    "uzbinde_files/libs/quarto-dashboard/datatables.min.css": {
+      "checksum": "7b2279175549cd49b758a7d5b4da6cd6"
+    },
+    "uzbinde_files/libs/quarto-dashboard/datatables.min.js": {
+      "checksum": "80521430bee6a8d1a1ba48987ff870c1"
+    },
+    "uzbinde_files/libs/quarto-dashboard/pdfmake.min.js": {
+      "checksum": "95caca411bcbd3095c0f8db152de05dd"
+    },
+    "uzbinde_files/libs/quarto-dashboard/quarto-dashboard.js": {
+      "checksum": "73bfea128e6f7c27f0bab4cc0777aff9"
+    },
+    "uzbinde_files/libs/quarto-dashboard/stickythead.js": {
+      "checksum": "5b27aeec9a60192899f23015fd741564"
+    },
+    "uzbinde_files/libs/quarto-dashboard/vfs_fonts.js": {
+      "checksum": "8a026906153f3e29bc684f6b392e8654"
+    },
+    "uzbinde_files/libs/quarto-dashboard/web-components.js": {
+      "checksum": "c91de9b5866fb45c694bbeafa119d6b9"
+    },
+    "uzbinde_files/libs/quarto-html/anchor.min.js": {
+      "checksum": "91bcf6cd1fd88fec3f109811e5fc3546"
+    },
+    "uzbinde_files/libs/quarto-html/popper.min.js": {
+      "checksum": "3a4a291ccf3f1ea0f82b641542fd3827"
+    },
+    "uzbinde_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css": {
+      "checksum": "37eea08aefeeee20ff55810ff984fec1"
+    },
+    "uzbinde_files/libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css": {
+      "checksum": "2fef5ea3f8957b3e4ecc936fc74692ca"
+    },
+    "uzbinde_files/libs/quarto-html/quarto.js": {
+      "checksum": "6f4245742deb3cc92337dbe2701ccfe1"
+    },
+    "uzbinde_files/libs/quarto-html/tabsets/tabsets.js": {
+      "checksum": "e8d6a8862b33ccc461f8fd532e05b365"
+    },
+    "uzbinde_files/libs/quarto-html/tippy.css": {
+      "checksum": "ebd6f8ce46a677e1a4f5f8a8317109a9"
+    },
+    "uzbinde_files/libs/quarto-html/tippy.umd.min.js": {
+      "checksum": "d828775275749701b48bd9d958814111"
+    }
+  },
+  "users": null
+}

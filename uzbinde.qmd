@@ -1,0 +1,565 @@
+---
+title: "Uzbeks in Germany"
+author: "by SultonovF"
+logo: pics/uzde1.jpg
+format:
+  dashboard: 
+    brand: _brand.yml
+    # logo: pics/uzde1.jpg
+    pagetitle: "dashboard"
+    nav-buttons:
+      - icon: telegram
+        href: https://t.me/R4Pythonistas
+        target: _blank
+      - icon: linkedin
+        href: https://www.linkedin.com/in/fazliddinsultonov
+        target: _blank
+      - icon: globe
+        href: https://sultanov.quarto.pub/blog/
+        target: _blank
+    # include-in-header: 
+    #   text: |
+    #     <img src="pics/uzde1.jpg">
+    include-after-body: "footer.html"
+    theme: 
+      light: [darkcyan, theme/custom.scss]
+      dark: darkly  
+    #backgroundcolor: "#bfc1c4" #ghostwhite #"#bfc1c4"
+
+server: shiny
+---
+
+```{r}
+#| context: setup
+#| include: false
+
+source("src/r_var.R")
+source("src/r_global.R")
+# load data frame
+df_status <- df_stat
+data_show <- dt    # for page data
+#df_date <- df_time
+```
+
+<!-- icons von bootsrap: https://icons.getbootstrap.com/ -->
+
+# summary
+
+## Row {height=20%}
+
+```{r}
+#| content: valuebox
+#| title: "Female"
+#| icon: gender-female
+#| color: pink
+
+# icons von bootsrap: https://icons.getbootstrap.com/ 
+# botstrap color https://getbootstrap.com/docs/5.1/customize/color/
+textOutput("cnt_f")
+```
+
+
+```{r}
+#| content: valuebox
+#| title: "Male"
+#| icon: gender-male
+#| color: blue
+
+textOutput("cnt_m")
+```
+
+
+```{r}
+#| content: valuebox
+#| title: "Total"
+#| icon: check-all
+#| color: indigo
+
+textOutput("cnt_t")
+```
+
+```{r}
+##| content: card-toolbar
+
+vec_y <- unique(data$Year)                   # years in the data
+#last_y <- as.character(max(as.integer(unique(data$Year)))) # last year
+#year <- append(vec_y, "All")                 # Add "All" to years
+# radioButtons()
+selectInput(
+  inputId = "vb_yil",
+  label = "Select a year to show the numbers:",
+  choices = vec_y,
+  selected = vec_y[length(vec_y)],
+  multiple = FALSE # selectInput
+  #inline = TRUE
+)
+```
+
+
+**Data Source:** *©Statistisches Bundesamt (Destatis), 2025 | Stand: 31.07.2025* <br>
+The figures in boxes and graphs are from the last year **(`r last(unique(data$Year))`)** for which data is available. When selecting an earlier year from the drop-down menu (left), the figures for selected year will be updated accordingly.
+
+## Row {height=75%}
+
+### Map plot {.panel-tabset .nav-pills}
+
+```{r}
+#| title: Total numbers for federal states
+
+#cat("Hier kommt map plot")
+plotOutput("plt_map")
+```
+
+### Facet plot
+
+```{r}
+#| title: Numbers by gender in last ten years 
+
+#cat("Hier kommt funnel chart bei geschleicht in bundesländern")
+plotOutput("plt_facet")
+```
+
+# dashboard
+
+## {.toolbar}
+
+```{r}
+##| content: card-toolbar
+
+vec_y <- unique(data$Year)                   # years in the data
+#last_y <- as.character(max(as.integer(unique(data$Year)))) # last year
+#year <- append(vec_y, "All")                 # Add "All" to years
+# radioButtons()
+radioButtons(
+  inputId = "yil",
+  label = "Year to Choice:",
+  choices = vec_y,
+  selected = vec_y[length(vec_y)],
+  #multiple = FALSE # selectInput
+  inline = TRUE
+)
+```
+
+## Row {height=65%}
+
+### Column {width = 40%}
+
+```{r}
+#| title: Numbers by gender in federal states for selected year
+#| width: 35%
+
+#cat("Hier by Geschleicht")
+plotOutput("plt_gen")
+```
+
+### Column {width = 40%}
+
+```{r}
+#| title: Numbers by residence status for selected year
+#| width: 35%
+
+#cat("Hier by Status")
+plotOutput("plt_stat")
+```
+
+### Column {width = 30%}
+
+As some names for the residence status characteristic are too long, they have been shortened for data processing and presentation purposes. For your information, the original names as they appear in the raw data and the modified names are shown below.
+
+
+```{r}
+#| title: Description of Variables
+#| width: 30%
+
+df_var <- data.frame(Edited = names(lookup), Original = lookup, row.names = NULL) |> 
+  filter(Edited != "BL")
+knitr::kable(df_var)
+```
+
+
+## Row {height=35%}
+
+```{r}
+#| title: Number by gender over the years
+
+#cat("Hier kommt Geschlecht bei Jahren")
+plotOutput("plt_time")
+```
+
+# data 
+
+```{r}
+#| title: Raw Data
+
+DT::dataTableOutput("dtbl")
+```
+
+<!-- Server ===================================================================================================== -->
+
+```{r}
+#| context: server
+
+
+# Load data =======================================================================================
+df <- reactive({
+  data |> 
+  mutate_at("Year", as.integer) |> 
+  rowwise() |> 
+  mutate(Cnt = sum(c_across(4:length(colnames(data)))))
+})
+
+# variables --------------------------------------------------------------------------------------
+# c_year <- 2024         # current yera, last yer in df / mapplot
+# l_year <- c_year - 15  # start year for facet plot
+c_year <- reactive({
+  df() |> 
+  select(Year) |> 
+  nth(-1) |> 
+  as.integer()
+})
+  
+l_year <- reactive({c_year() - 15})
+
+# erste Element in Variable Year, start für Line Plot
+first_y <- reactive({
+  df() |> 
+    select(Year) |> 
+    unique() |> 
+    first() |> 
+    as.integer()
+})
+# letzte Element
+last_y <- reactive({
+  df() |> 
+    select(Year) |> 
+    unique() |> 
+    last() |> 
+    as.integer()
+})
+
+
+# Page summary +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Value boxes ***************************************************************************
+# df for value boxes
+df_vBox <- reactive({
+  df() |> 
+  filter(Year == input$vb_yil) |> 
+  select(BL, Geschlecht, Cnt) |> 
+  group_by(Geschlecht) |> 
+  summarise(cnt = sum(Cnt))
+})
+# Female
+vb_female <- reactive({
+  df_vBox() |> 
+    filter(Geschlecht == "weiblich") |> 
+    pull()
+})
+output$cnt_f <- renderText({
+  format(vb_female(), big.mark = ",", scientific = FALSE) #%>% as.character()
+})
+# Male
+vb_male <- reactive({
+  df_vBox() |> 
+    filter(Geschlecht == "männlich") |> 
+    pull()
+})
+output$cnt_m <- renderText({
+  format(vb_male(), big.mark = ",", scientific = FALSE) #%>% as.character()
+})
+
+# Total
+vb_total <- reactive({sum(vb_female(),vb_male())})
+output$cnt_t <- renderText({
+  format(vb_total(), big.mark = ",", scientific = FALSE) #%>% as.character()
+})
+# Mapplot =====================================================================================
+# data frame
+ger <- reactive({
+  gisco_get_nuts(
+    year = 2024,
+    epsg = 4326,
+    nuts_level = 1,
+    resolution =  "01",
+    country = "Germany"
+  )
+})
+df_de <- reactive({
+  df() |> 
+  # mutate_at("Year", as.integer) |> 
+  filter(Year==c_year()) |> 
+  rowwise() |> 
+  # mutate(Cnt = sum(c_across(4:length(colnames(data))))) |>
+  select(c(BL, Geschlecht, Cnt)) |> 
+  group_by(BL) |> 
+  summarise(Total = sum(Cnt))
+})
+df_map <- reactive({
+  ger() |> 
+  left_join(df_de(), by = c("NUTS_NAME" = "BL")) |> 
+  mutate(BL = bl[NUTS_NAME]) |> 
+  mutate(lblName = paste0(BL, "-", NUTS_NAME)) |> 
+  select(NUTS_NAME, Total, BL, lblName)
+})
+# Mapplot ---------------------------------------------------------
+output$plt_map <- renderPlot({
+  df_map() |> 
+  ggplot() +
+  geom_sf(aes(fill = lblName))+  
+  geom_sf_label(aes(label = paste(BL, ":", Total)), 
+    fill = "aliceblue", col = "dodgerblue4", colour = "aliceblue") +
+  geom_text(aes(y = 47.1, x = 6.9, 
+    label = paste("Gesamt:", sum(Total))),stat = "unique",
+    size = 3.9, size.unit = "mm", col = "dodgerblue4", fontface = "bold") +
+  annotation_raster(img_dop, xmin = 6, xmax = 8, ymin = 54, ymax = 55.5, interpolate = FALSE) +
+  theme_minimal()+
+  labs(
+    title = glue::glue("**Number of Uzbeks living in Germany by federal states**"),
+    #subtitle = "**Data Source:** *©Statistisches Bundesamt (Destatis), 2025 | Stand: 31.07.2025*",
+    caption = "*Plot by:* ***Fazliddin Sultonov***") + 
+  guides(fill = guide_legend(title="Bundesland")) +
+  theme(
+    plot.title = ggtext::element_markdown(size = 14, color = "steelblue4"),
+    #plot.subtitle = element_markdown(size = 12),
+    plot.caption = element_markdown(size = 12), # element_textbox_simple()
+    plot.caption.position = "plot",             #plot, margin, panel,
+    legend.title = element_text(color = "darkgrey", size = 12, face = "bold"),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    axis.ticks=element_blank(),
+    axis.title.x=element_blank(),
+    axis.title.y=element_blank()
+    #plot.background = element_rect(fill = "aliceblue")
+  )
+})
+
+# Facet Plot =====================================================================================
+# Data ------------------------------------------------------------------------
+ df_y <- reactive({
+  df() |> 
+  filter(Year <= c_year() & Year >= l_year()) |>
+  rowwise() |> 
+  select(c(Year, BL, Geschlecht, Cnt)) |> 
+  group_by(Year, Geschlecht) |> 
+  summarise(Total = sum(Cnt)) |>
+  mutate(
+    Total = case_when(
+      Geschlecht == "männlich" ~ Total * -1,
+      TRUE ~ Total) 
+  ) |> 
+  ungroup()
+})
+# facet plot ----------------------------------------
+
+output$plt_facet <- renderPlot({
+  df_y() |> 
+  ggplot(aes(x = Year, y = Total, fill = Geschlecht)) +
+  geom_bar(position = position_dodge(width = 0.7), stat = "identity") +
+  scale_x_continuous(breaks = c(seq(l_year(),c_year(), 1)), labels = c(seq(l_year(),c_year(), 1)),
+                     expand = expansion(mult = c(0.01, 0.02))) +
+  geom_label(aes(label = abs(Total)),
+             colour = "white", fontface="bold", size=3.8) +
+  facet_share(~Geschlecht, dir = "h", scales = "free", reverse_num = TRUE, switch = "y") +
+  scale_fill_manual(values=c(männlich = "#39bfc2", weiblich = "tomato3"))+
+  scale_x_continuous(
+    breaks = c(seq(l_year(),c_year(), 1)),
+    labels = c(seq(l_year(),c_year(), 1)),
+    expand = expansion(mult = c(0.01, 0.02))) +
+  coord_flip() +
+  labs(
+    title = "**Number over the years by gender**",
+    #subtitle = "**Data Source:** *©Statistisches Bundesamt (Destatis), 2025 | Stand: 31.07.2025*",
+    caption = "*Plot by:* ***Fazliddin Sultonov***",
+    x = NULL, y = NULL) +
+  theme_update()+  
+  theme(
+    plot.title = ggtext::element_markdown(size = 15, color = "steelblue4",  hjust = 0.5),
+    #plot.subtitle = ggtext::element_markdown(size = 12, hjust = 0.5),
+    plot.caption = ggtext::element_markdown(size = 12, hjust = 0.5),
+    legend.position = "none",
+    axis.text.x = element_blank(),   # axis x label leer
+    axis.ticks.x = element_blank(),  # chiziqchala axis dagi
+    axis.text.y = element_text(size = 12, face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.background = element_rect(fill = "ghostwhite"), 
+    plot.background = element_rect(fill = "azure2"),
+    strip.background = element_rect(fill = "linen", colour = "steelblue4"),
+    strip.text = element_text(size = 13, face = "bold", colour = "steelblue4")
+  )
+})
+
+# dashboard +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Barplot by Bundesland =====================================================================================
+# Data -------------------------------------------------------------
+df_gen <- reactive({
+  df() |> 
+  select(c(Year, BL, Geschlecht, Cnt)) |> 
+  pivot_wider(names_from = Geschlecht, values_from = Cnt)  |> 
+  rowwise() |> 
+  mutate(Total = sum(männlich, weiblich)) |> 
+  pivot_longer(!c(Year, BL, Total), names_to = "Geschlecht", values_to = "Cnt") |> 
+  select(c(Year, BL,Geschlecht, Cnt, Total))
+})
+
+# Plot ---------------------------------------------------------
+
+output$plt_gen <- renderPlot({
+  df_gen() |> 
+  filter(Year==input$yil) |> 
+  ggplot(aes(x = reorder(BL, Cnt), y = Cnt, group = Geschlecht))+
+  geom_col(aes(fill = Geschlecht), position = "dodge") +
+  geom_text(aes(label = Cnt, y = Cnt - 30),
+    position = position_dodge(0.9),
+    hjust = 0.75, size=3.8, color = "white", face = "bold") +
+  geom_col(aes(y = Total/2), width = 0.95, fill = "gray", alpha = 0.3)+
+  geom_text(aes( y = Total, label=paste("Σ:", Total)), hjust = 0.3, color="gray37", size=3.5) +
+  scale_y_continuous(
+    labels = function(y) ifelse(y == 0, paste0(y), paste0(y/1000, "k")),
+    expand = expansion(c(0.01, 0.3))) +
+  scale_fill_manual(
+    name = "Geschlecht: ",
+    values=c(männlich = "#39bfc2", weiblich = "tomato3"))+
+  labs(
+    title = paste("**Anzahl in Bundesländern bei Geschlecht**", input$yil),
+    #subtitle = "*Data Source:* ©Statistisches Bundesamt (Destatis), 2025 | Stand: 31.07.2025",
+    caption = "*Plot by:* ***Fazliddin Sultonov***",
+    x = NULL, y = "k = Tausend") +
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    legend.position = "inside", legend.position.inside = c(0.76, 0.07),
+    legend.direction = "horizontal",
+    #legend.title = element_blank(),
+    axis.text.y = element_text(face = "bold", size = 11),
+    axis.text.x = element_text(face = "bold.italic", size = 10),
+    plot.title = element_markdown(size = 14, color = "steelblue4", hjust = 0.5),
+    #plot.subtitle = element_markdown(size = 11, hjust = 0.5),
+    plot.caption = ggtext::element_markdown(size=11, hjust = 0.5),
+    panel.background = element_rect(fill = "ghostwhite"),
+    plot.background = element_rect(fill = "aliceblue")
+  )
+})
+
+
+# funelchart bei Status ====================================================================================
+# df -------------------------------------------------------
+# df_stat <- reactive({
+#   df() |> 
+#   pivot_longer(!c(Year, BL, Geschlecht), names_to = "Status", values_to = "Cnt") |> 
+#   rowwise() |> 
+#   mutate(
+#     Cnt = case_when(
+#       Geschlecht == "männlich" ~ Cnt * -1,
+#       TRUE ~ Cnt) 
+#   ) #|> ungroup()
+# })
+df_stat <- reactive({
+  df_status
+})
+# funnel char plot ----------------------------------------
+brks <- c(seq(-4000, 4000, by = 500))       # breaks
+lbls = c(seq(4, 0, -0.5), seq(0.5, 4, 0.5)) # labels
+
+#year <- reactive({req(input$yil)})
+output$plt_stat <- renderPlot({
+  df_stat() |> 
+  filter(Year==input$yil) |> 
+  ggplot(aes(x = reorder(Status, abs(Cnt)), y= Cnt, group = Geschlecht))+
+  geom_col(aes(fill = Geschlecht), position="stack")+
+  scale_y_continuous(breaks = brks, labels = function(x) ifelse(x == 0, paste0(lbls), paste0(lbls, "k"))) +
+  scale_fill_manual(
+    name = "Geschlecht: ",
+    values=c(männlich = "#39bfc2", weiblich = "tomato3")) +
+  labs(
+    title = paste("**Anzahl nach Aufenthaltsstatus bei Geschlecht für:**", input$yil),
+    #subtitle = "*Data Source:* ©Statistisches Bundesamt (Destatis), 2025 | Stand: 31.07.2025",
+    caption = "*Plot by:* ***Fazliddin Sultonov***",
+    x = "Aufenthaltsstatus", y = "k = Tausend") +
+  coord_flip() +
+  theme_minimal()+
+  theme(
+    plot.title = element_markdown(size = 14, color = "steelblue4", hjust = 0.5),
+    #plot.subtitle = element_markdown(size = 11, hjust = 0.5),
+    plot.caption = element_markdown(size = 12, color = "steelblue4", hjust = 0.5),
+    legend.position = "inside", legend.position.inside = c(0.76, 0.07),
+    legend.direction = "horizontal",
+    axis.text.y = element_text(face = "bold", size = 11),
+    axis.text.x = element_text(face = "bold.italic", size = 10),
+    panel.background = element_rect(fill = "gray100"),
+    plot.background = element_rect(fill = "gray95")
+  )
+})
+
+# Line plot ================================================================================
+# # data------------------------
+df_time <- reactive({
+  df() |> 
+  select(c(Year, BL, Geschlecht, Cnt)) |> 
+  group_by(Year, Geschlecht) |> 
+  summarise(Total = sum(Cnt)) |> 
+  ungroup()
+})
+# df_date <- reactive({
+#   df_time
+# })
+# plot
+output$plt_time <- renderPlot({
+  df_time() |> 
+  ggplot(aes(x = Year, y = Total, group = Geschlecht, color = Geschlecht))+
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(
+    labels = function(x) paste(x/1000, "k")) +
+  scale_x_continuous(
+    limits = c(first_y(), last_y()),
+    breaks = seq(first_y(), last_y(), 2),
+    expand = expansion(c(0.01, 0.02))) + 
+  scale_color_manual(
+    name = "Geschlecht: ",
+    values=c(männlich = "#39bfc2", weiblich = "tomato3")) +
+  labs(
+    title = "**Anzahl bei Geschlecht über Jahren**",
+    #subtitle = subt,
+    caption = cap,
+    x = NULL, y = "k = Tausend")+
+  theme_minimal()+
+  theme(
+    axis.ticks.x = element_line(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.background = element_rect(fill = "ghostwhite"),
+    panel.background = element_rect(fill = "gray100"),
+    
+    axis.text.x = element_text(size = 11, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold.italic")  
+  ) +
+  my_theme   # standard verwendbar in anderen plots/ in r_var.R
+})
+
+# data ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+data_orig <- reactive({
+  data_show
+})
+
+
+output$dtbl <- DT::renderDataTable({
+  datatable(data_orig(),
+    filter="top",
+    extensions = 'Buttons',
+    options = list(
+      dom = 'Blfrtip',
+      buttons = c('copy', 'csv', 'excel', 'pdf'),
+      pageLength = 50,
+      lengthMenu = list(
+        c(50,100,150,-1),
+        c(50,100,150,"All")),
+      server = FALSE
+    )
+  )
+})
+
+
+
+```
