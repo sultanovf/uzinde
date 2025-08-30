@@ -27,7 +27,9 @@ pacman::p_load(
   png,          # read png
   ggimage,      # pictures to the plot
   ggtext,       # markdown
-  ggpol         # facet
+  ggpol,         # facet
+  knitr,
+  httr2
 )
 
 # Paths ==================================================================================
